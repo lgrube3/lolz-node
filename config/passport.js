@@ -14,7 +14,7 @@ passport.use('local-login', new LocalStrategy(
             }
             if (!user) {
                 return done(null, false, {
-                    message: 'Incorrect email address'
+                    message: 'Email address not found. Click on the link below to sign up!' 
                 });
             }
             if (!user.validPassword(password)) {

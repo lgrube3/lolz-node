@@ -301,8 +301,52 @@ router.get('/firstpictureset', function(req, res, next) {
     });
 });
 
+router.get('/firstpopularpictureset', function(req, res, next) {
+    Picture.find().sort('-likes').limit(3).exec(function(err, pictures) {
+        if (err) {
+            return next(err);
+        }
+        res.json(pictures);
+    });
+});
+
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
+router.get('/firstrandompictureset', function(req, res, next) {
+    // -randomize all photos and save somewhere
+    // -set the skip to 3 and save that somewhere
+    // -return first 3
+    Picture
+        .find()
+        .exec(function(err, pictures) {
+            if (err) {
+                return next(err);
+            }
+            res.json(shuffle(pictures));
+        });
+
+});
+
 router.post('/repeatpictureset', function(req, res, next) {
-    Picture.find({
+    Picture
+        .find({
             _id: {
                 $lt: req.body._id
             }
@@ -315,6 +359,27 @@ router.post('/repeatpictureset', function(req, res, next) {
             }
             res.json(pictures);
         });
+});
+
+router.post('/repeatpopularpictureset', function(req, res, next) {
+    Picture
+        .find()
+        .sort({likes:-1})
+        .skip(req.body.repeatCounter * 3)
+        .limit(3)
+        .exec(function(err, pictures) {
+            if (err) {
+                return next(err);
+            }
+            res.json(pictures);
+        });
+});
+
+router.post('/repeatrandompictureset', function(req, res, next) {
+    // -access random list
+    // -skip whatever is saved
+    // -return 3
+    //res.json(picsRandomized);
 });
 
 router.get('/picturesanon', function(req, res, next) {
